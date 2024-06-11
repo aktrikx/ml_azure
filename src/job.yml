@@ -1,15 +1,34 @@
+# $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# code: model
+# command: >-
+#   python 
+#   --
+#   --
+# inputs:
+#   training_data: 
+#     type: uri_folder 
+#     path: 
+#   reg_rate: 0.01
+# environment: azureml:AzureML-sklearn-0.24-ubuntu18.04-py37-cpu@latest
+# compute: 
+# experiment_name: 
+# description: 
+
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
-code: model
-command: >-
-  python 
-  --
-  --
+type: command
+code: src/model
+command: >
+  python train.py --training_data ${{inputs.training_data}} --reg_rate ${{inputs.reg_rate}}
 inputs:
   training_data: 
-    type: uri_folder 
-    path: 
-  reg_rate: 0.01
+    type: uri_folder
+    mode: ro_mount  # Read-only mount
+    path: azureml://datastores/workspaceblobstore/paths/diabetes-dev-folder/
+  reg_rate:
+    type: number
+    default: 0.01
 environment: azureml:AzureML-sklearn-0.24-ubuntu18.04-py37-cpu@latest
-compute: 
-experiment_name: 
-description: 
+compute: your_compute_target_name
+experiment_name: your_experiment_name
+description: >
+  This job reads CSV files from a registered data asset and uses the data to train a classification model.
